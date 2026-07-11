@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, shell, dialog, Notification } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { execSync } = require('child_process');
@@ -6,7 +6,7 @@ const { execSync } = require('child_process');
 const SettingsManager = require('./src/settings/settingsManager');
 
 let mainWindow = null, settingsManager = null;
-let isMonitoring = false, currentPid = null, currentName = 'process';
+let currentPid = null, currentName = 'process';
 let lastNetBytes = null;
 
 let history = { cpu: [], ram: [], netRx: [], netTx: [], disk: [], timestamps: [] };
@@ -54,14 +54,13 @@ ipcMain.handle('search-processes', (_e, q) => getProcessList(q));
 ipcMain.handle('start-monitoring', (_e, pid, name) => {
     currentPid = pid;
     currentName = name || 'process';
-    isMonitoring = true;
     lastNetBytes = null;
     history = { cpu: [], ram: [], netRx: [], netTx: [], disk: [], timestamps: [] };
     return { ok: true };
 });
 
 ipcMain.handle('stop-monitoring', () => {
-    isMonitoring = false; currentPid = null;
+    currentPid = null;
     return { ok: true };
 });
 
@@ -106,11 +105,10 @@ ipcMain.handle('get-metrics', () => {
     } catch {}
     m.netRx = netRx; m.netTx = netTx;
 
-    // Threads
-    m.threads = 1;
+    m.threads = 0;
     try {
-        const out = execSync(`ps -p ${pid} -o pid= -w`, { encoding: 'utf-8', timeout: 500 });
-        if (out.trim()) m.threads = 1;
+        const out = execSync(`ps -p ${pid} -L -o pid= 2>/dev/null`, { encoding: 'utf-8', timeout: 500 });
+        m.threads = out.trim().split('\n').length;
     } catch {}
 
     // Store history
@@ -141,7 +139,7 @@ ipcMain.handle('get-process-details', (_e, pid) => {
         const out = execSync(`ps -p ${pid} -o comm=,args=`, { encoding: 'utf-8', timeout: 1000 });
         const lines = out.trim().split('\n');
         details.path = lines[0] || '';
-        details.args = (lines[0] || '').trim();
+        details.args = lines[1] || lines[0] || '';
     } catch {}
 
     // Open ports via lsof

@@ -20,16 +20,9 @@ class SettingsManager {
     defaults() {
         return {
             favorites: [],
-            alerts: [],
             settings: {
-                menuBarDisplay: 'cpu',
-                refreshRate: 1000,
                 theme: 'system',
-                showCpuPerCore: true,
-                showSparklines: true,
-                historyLength: 600,
-                alwaysOnTop: false,
-                startAtLogin: false
+                historyLength: 600
             }
         };
     }
@@ -57,15 +50,6 @@ class SettingsManager {
 
     removeFavorite(pid) {
         this.data.favorites = (this.data.favorites || []).filter(f => f.pid !== pid);
-        this.persist();
-    }
-
-    getAlerts() {
-        return this.data.alerts || [];
-    }
-
-    saveAlerts(alerts) {
-        this.data.alerts = alerts;
         this.persist();
     }
 
