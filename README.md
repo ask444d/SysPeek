@@ -2,7 +2,7 @@
 
 **Lightweight real-time per-process resource monitor for macOS.**
 
-![macOS](https://img.shields.io/badge/macOS-11+-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Release](https://img.shields.io/github/v/release/ask444d/SysPeek)
+![macOS](https://img.shields.io/badge/macOS-11+-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Release](https://img.shields.io/github/v/release/ask444d/SysPeek) [![Patreon](https://img.shields.io/badge/Patreon-Support%20SysPeek-orange)](https://www.patreon.com/cw/ask444d)
 
 SysPeek is a compact utility that gives you instant visibility into any process on your Mac — CPU, RAM, network throughput, open files, threads, and ports — all in a minimal 320×480 window.
 
@@ -56,12 +56,6 @@ npm start
 ```
 
 Requires Node.js 18+ and macOS.
-
-## Support
-
-If you find SysPeek useful, consider supporting development:
-
-[![Patreon](https://img.shields.io/badge/Patreon-Support%20SysPeek-orange)](https://www.patreon.com/cw/ask444d)
 
 ## License
 
