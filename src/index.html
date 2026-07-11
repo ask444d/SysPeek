@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:;">
+    <title>SysPeek</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="vendor/chart.min.js"></script>
+</head>
+<body>
+    <div id="titlebar">
+        <div class="traffic-lights"></div>
+    </div>
+
+    <!-- ─── Picker ─── -->
+    <div id="pickerView">
+        <div class="picker-search">
+            <svg viewBox="0 0 24 24" width="14" height="14"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <input type="text" id="searchInput" placeholder="Find process... (Cmd+F)" autocomplete="off">
+        </div>
+        <div id="alertBar" class="alert-bar hidden">
+            <span class="alert-icon">!</span>
+            <span id="alertText"></span>
+            <button id="alertDismiss" class="alert-dismiss">&times;</button>
+        </div>
+        <ul id="processList"></ul>
+    </div>
+
+    <!-- ─── Monitor ─── -->
+    <div id="monitorView" class="hidden">
+        <div id="monitorHeader">
+            <span id="monitorName">—</span>
+            <span id="monitorPid">—</span>
+            <button id="btnExportLog" class="hdr-btn" title="Export log">
+                <svg viewBox="0 0 24 24" width="12" height="12"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button id="btnExportPng" class="hdr-btn" title="Export charts as PNG">
+                <svg viewBox="0 0 24 24" width="12" height="12"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button id="btnCopy" class="hdr-btn" title="Copy metrics (Cmd+Shift+C)">
+                <svg viewBox="0 0 24 24" width="12" height="12"><rect x="9" y="9" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <button id="btnKill" class="hdr-btn hdr-btn-danger" title="Kill process">
+                <svg viewBox="0 0 24 24" width="12" height="12"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <button id="btnBack" class="hdr-btn" title="Back">
+                <svg viewBox="0 0 24 24" width="12" height="12"><polyline points="15 18 9 12 15 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+        </div>
+
+        <div class="metrics">
+            <div class="metric">
+                <div class="metric-head">
+                    <span class="dot cpu"></span>
+                    <span class="metric-name">CPU</span>
+                    <span class="metric-val" id="valCpu">0%</span>
+                </div>
+                <div class="bar-wrap"><div class="bar" id="barCpu"></div></div>
+                <canvas id="chartCpu" height="32"></canvas>
+            </div>
+
+            <div class="metric">
+                <div class="metric-head">
+                    <span class="dot ram"></span>
+                    <span class="metric-name">RAM</span>
+                    <span class="metric-val" id="valRam">0 MB</span>
+                </div>
+                <div class="bar-wrap"><div class="bar" id="barRam"></div></div>
+                <canvas id="chartRam" height="32"></canvas>
+            </div>
+
+            <div class="metric">
+                <div class="metric-head">
+                    <span class="dot net"></span>
+                    <span class="metric-name">NET</span>
+                    <span class="metric-val" id="valNet">↓0 B/s ↑0 B/s</span>
+                </div>
+                <div class="net-charts">
+                    <div class="net-chart-wrap">
+                        <span class="net-chart-label">RX</span>
+                        <canvas id="chartNetRx" height="28"></canvas>
+                    </div>
+                    <div class="net-chart-wrap">
+                        <span class="net-chart-label">TX</span>
+                        <canvas id="chartNetTx" height="28"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-head">
+                    <span class="dot disk"></span>
+                    <span class="metric-name">DISK</span>
+                    <span class="metric-val" id="valDisk">R:0 W:0</span>
+                </div>
+                <canvas id="chartDisk" height="32"></canvas>
+            </div>
+
+            <div class="info-row">
+                <span>Threads: <b id="valThreads">0</b></span>
+                <span>Files: <b id="valFiles">0</b></span>
+                <span>Conns: <b id="valConns">0</b></span>
+            </div>
+
+            <div id="detailsPanel" class="details-panel">
+                <button id="btnDetails" class="details-toggle">
+                    <span class="details-label">Details</span>
+                    <svg class="details-chevron" viewBox="0 0 24 24" width="10" height="10"><polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div id="detailsBody" class="details-body hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Export Modal ─── -->
+    <div id="exportModal" class="modal hidden">
+        <div class="modal-box">
+            <div class="modal-top">
+                <span id="modalTitle">Export</span>
+                <button id="modalClose" class="modal-x">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

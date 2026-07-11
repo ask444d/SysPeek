@@ -1,0 +1,29 @@
+{
+  "name": "syspeek",
+  "version": "1.0.0",
+  "description": "Lightweight real-time process resource monitor for macOS",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "NODE_ENV=development electron .",
+    "build": "electron-builder --mac",
+    "build:dmg": "electron-builder --mac dmg"
+  },
+  "author": "SysPeek",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^30.5.1",
+    "electron-builder": "^24.13.0"
+  },
+  "build": {
+    "appId": "com.syspeek.app",
+    "productName": "SysPeek",
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": "dir"
+    },
+    "directories": {
+      "output": "dist"
+    }
+  }
+}
