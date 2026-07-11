@@ -57,6 +57,12 @@ npm start
 
 Requires Node.js 18+ and macOS.
 
+## Support
+
+If you find SysPeek useful, consider supporting development:
+
+[![Patreon](https://img.shields.io/badge/Patreon-Support%20SysPeek-orange)](https://www.patreon.com/cw/ask444d)
+
 ## License
 
 MIT
