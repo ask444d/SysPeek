@@ -6,6 +6,12 @@
 
 SysPeek is a compact utility that gives you instant visibility into any process on your Mac — CPU, RAM, network throughput, open files, threads, and ports — all in a minimal 320×480 window.
 
+<p align="center">
+  <img src="docs/screenshot-list.png" width="320" alt="Process list">
+  &nbsp;&nbsp;
+  <img src="docs/screenshot-monitor.png" width="320" alt="Monitor view">
+</p>
+
 ## Download
 
 1. Go to [Releases](https://github.com/ask444d/SysPeek/releases)
